@@ -1,0 +1,149 @@
+﻿@using System.Data
+@model CrudPractice_17May.Models.Properties
+
+@{
+    ViewBag.Title = "Home Page";
+}
+
+<div>
+    <input type="hidden" id="Id"/>
+    <label>
+        Name<input type="text" id="Name" class="form-control" />
+    </label>
+    <label>
+        Email<input type="email" id="Email" class="form-control" />
+    </label>
+    <label>
+        Mobile Number<input type="number" id="Number" class="form-control" />
+    </label>
+    <input type="button" value="Register" id="Register" class="btn btn-primary" onclick="Reg()" />
+    <input type="button" value="Update" id="Update" class="btn btn-success" onclick="Update()"/>
+</div><hr />
+
+<div>
+    <table class="table table-bordered ">
+        <tr>
+            <th>Sr No.</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Mobile Number</th>
+            <th>Action</th>
+        </tr>
+        @if (Model.data.Rows.Count > 0)
+        {
+            foreach (DataRow d in Model.data.Rows)
+            {
+                 int i = 1; 
+                <tr class="text-center">
+                    <td style="font-weight:bold;">@i</td>
+                    <td>@d["Name"]</td>
+                    <td>@d["Email"]</td>
+                    <td>@d["MNumber"]</td>
+                    <td>
+                        <input type="button" value="Edit" class="btn btn-primary"  onclick="EditData(@d["Id"])"/>
+                        <input type="button" value="Delete" class="btn btn-danger" onclick="deletedata(@d["Id"])" />
+                    </td>
+                </tr>                  
+                { i += 1; }
+            }
+        }
+    </table>
+</div>
+
+
+
+<script>
+    function Reg() {
+        var Name = $("#Name").val();
+        var Email = $("#Email").val();
+        var Number = $("#Number").val();
+
+        var data = new FormData();
+        data.append("Name", Name);
+        data.append("Email", Email);
+        data.append("Number", Number);
+        data.append("Action", 1);
+
+        $.ajax({
+            type: 'post',
+            url: '../Home/Insert',
+            data: data,
+            contentType: false,
+            processData: false,
+            success: function (r) {
+                alert(r);
+                window.location.reload(true);
+            }
+        })
+    }
+
+    function deletedata(Id) {
+        var data = new FormData();
+        data.append("Action", 3);
+        data.append("Id", Id);
+
+        $.ajax({
+            type: 'POST',
+            url: '../Home/DeleteData',
+            data: data,
+            contentType: false,
+            processData: false,
+            success: function (r) {
+                alert(r);
+                window.location.reload(true);
+            }
+        })
+    }
+
+    function EditData(Id) {
+        var data = new FormData();
+        data.append("Action", 4);
+        data.append("Id", Id);
+
+        $.ajax({
+            type: 'POST',
+            url: '../Home/EditData',
+            data: data,
+            contentType: false,
+            processData: false,
+            success: function (r) {
+                $("#Name").val(r.Name);
+                $("#Email").val(r.Email);
+                $("#Number").val(r.Number);
+                $("#Update").show();
+                $("#Register").hide();
+                $("#Id").val(Id);
+            }
+        })
+    }
+
+    function Update() {
+        var Name = $("#Name").val();
+        var Email = $("#Email").val();
+        var Number = $("#Number").val();
+        var Id = $("#Id").val();
+        var data = new FormData();
+        data.append("Name", Name);
+        data.append("Email", Email);
+        data.append("Number", Number);
+        data.append("Action", 5);
+        data.append("Id", Id);
+
+        $.ajax({
+            type: 'post',
+            url: '../Home/Update',
+            data: data,
+            contentType: false,
+            processData: false,
+            success: function (r) {
+                alert(r);
+                window.location.reload(true);
+            }
+        })
+    }
+
+    function btn() {
+        $("#Update").hide();
+        $("#Register").show();
+    }
+</script>
